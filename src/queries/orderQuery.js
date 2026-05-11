@@ -21,7 +21,11 @@ const getRecords = async (query, offset, limit, sort) => {
       delete query.maxFinalPrice;
     }
 
-    const orders = await Order.find(query).sort(sort).skip(offset).limit(limit);
+    const orders = await Order.find(query)
+      .sort(sort)
+      .skip(offset)
+      .limit(limit)
+      .lean();
     const count = await Order.countDocuments(query);
     return { orders, count };
   } catch (error) {

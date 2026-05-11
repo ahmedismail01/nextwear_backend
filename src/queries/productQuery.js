@@ -35,7 +35,8 @@ const getRecords = async (query, offset, limit, sort) => {
     const products = await Product.find(query)
       .sort(sort || {})
       .skip(offset)
-      .limit(limit);
+      .limit(limit)
+      .lean();
 
     const count = await Product.countDocuments(query);
 

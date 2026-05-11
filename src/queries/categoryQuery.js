@@ -2,7 +2,7 @@ const Category = require("../models/category");
 
 const getRecords = async (query) => {
   try {
-    const categories = await Category.find(query);
+    const categories = await Category.find(query).lean();
     const count = await Category.countDocuments(query);
     return { categories, count };
   } catch (error) {

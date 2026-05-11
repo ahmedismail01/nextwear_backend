@@ -15,7 +15,8 @@ const getRecords = async (query, skip, limit, sort) => {
     const promocodes = await PromoCode.find(query)
       .skip(skip)
       .limit(limit)
-      .sort(sort);
+      .sort(sort)
+      .lean();
     const count = await PromoCode.countDocuments(query);
     return { promocodes, count };
   } catch (error) {

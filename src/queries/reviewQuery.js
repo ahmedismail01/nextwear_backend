@@ -15,7 +15,8 @@ const getRecords = async (query, skip, limit, sort) => {
     const reviews = await Review.find(query)
       .sort(sort)
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
+      .lean();
     const count = await Review.countDocuments(query);
     return { reviews, count };
   } catch (error) {

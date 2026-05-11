@@ -12,7 +12,7 @@ const getRecord = async (query) => {
 
 const getRecords = async (query) => {
   try {
-    const users = await User.find(query);
+    const users = await User.find(query).lean();
     return users;
   } catch (error) {
     console.error("Error fetching users:", error);

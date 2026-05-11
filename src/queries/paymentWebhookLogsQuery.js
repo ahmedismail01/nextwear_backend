@@ -15,7 +15,8 @@ const getRecords = async (query, offset, limit, sort) => {
     const logs = await PaymentWebhookLogs.find(query)
       .sort(sort || {})
       .skip(offset || 0)
-      .limit(limit || 10);
+      .limit(limit || 10)
+      .lean();
 
     const count = await PaymentWebhookLogs.countDocuments(query);
 
