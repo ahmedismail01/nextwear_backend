@@ -1,4 +1,4 @@
-require("dotenv").config();
+require("@dotenvx/dotenvx").config();
 require("../src/config/db")();
 require("../src/events/index");
 const express = require("express");

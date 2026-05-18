@@ -3,6 +3,7 @@ const userQuery = require("../queries/userQuery");
 const userCommand = require("../commands/userCommand");
 const bcrypt = require("bcryptjs");
 const AppError = require("../utils/appError");
+const { sanitizeUser } = require("../dto/userDto");
 class authService {
   async login(email, password) {
     const user = await userQuery.getRecord({ email });
@@ -13,7 +14,8 @@ class authService {
     if (!isMatch) {
       throw new AppError("Invalid credentials", 401, true);
     }
-    return user;
+
+    return sanitizeUser(user);
   }
 
   async generateToken(payload) {
@@ -25,7 +27,7 @@ class authService {
       throw new AppError("User already exists", 409, true);
     }
     const newUser = await userCommand.createRecord(userData);
-    return newUser;
+    return sanitizeUser(newUser);
   }
 
   async comparePassword(inputPassword, storedPassword) {

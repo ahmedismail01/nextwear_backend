@@ -59,36 +59,7 @@ class ProductService {
   }
 
   async consumeProducts(products, session) {
-    for (const { variant, quantity } of products) {
-      const product = await productQuery.getRecord(
-        {
-          "variants._id": variant._id,
-        },
-        session
-      );
-
-      if (!product) {
-        throw new AppError("Product not found", 404, true);
-      }
-
-      let realVariant = product.variants.id(variant._id)?.toObject();
-
-      if (!variant) {
-        throw new AppError("Variant not found", 404, true);
-      }
-
-      if (realVariant.quantity < quantity) {
-        throw new AppError("Not enough quantity", 400, true);
-      }
-
-      await productCommand.updateVariant(
-        variant._id,
-        {
-          quantity: realVariant.quantity - quantity,
-        },
-        session
-      );
-    }
+    await productCommand.consumeProducts(products, session);
   }
 
   async updateProduct(id, data) {

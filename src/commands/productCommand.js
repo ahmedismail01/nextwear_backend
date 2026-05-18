@@ -59,7 +59,7 @@ const addVariant = async (productId, data) => {
     const rec = await Product.findOneAndUpdate(
       { _id: productId },
       { $push: { variants: data } },
-      { new: true }
+      { new: true },
     );
 
     if (!rec) {
@@ -78,7 +78,7 @@ const removeVariant = async (productId, variantId) => {
     const rec = await Product.findOneAndUpdate(
       { _id: productId },
       { $pull: { variants: { _id: variantId } } },
-      { new: true }
+      { new: true },
     );
 
     if (!rec) {
@@ -115,13 +115,50 @@ const updateVariant = async (variantId, data, session) => {
     const rec = await Product.findOneAndUpdate(
       { "variants._id": variantId },
       { $set: { "variants.$": data } },
-      { new: true }
+      { new: true },
     ).session(session || null);
     return rec;
   } catch (error) {
     console.error("Error updating variant:", error);
     throw error;
   }
+};
+
+const consumeProducts = async (products, session = null) => {
+  const variantsIds = products.map(({ variant }) => variant._id);
+
+  const foundProducts = await Product.find({
+    "variants._id": { $in: variantsIds },
+  }).session(session);
+
+  const variantsMap = new Map();
+  for (const product of foundProducts) {
+    for (const v of product.variants) {
+      variantsMap.set(String(v._id), v);
+    }
+  }
+
+  // Validate
+  for (const { variant, quantity } of products) {
+    const realVariant = variantsMap.get(String(variant._id));
+    if (!realVariant) throw new AppError("Variant not found", 404, true);
+    if (realVariant.quantity < quantity) {
+      throw new AppError("Not enough quantity", 400, true);
+    }
+  }
+
+  // Consume
+  await Promise.all(
+    products.map(async ({ variant, quantity }) => {
+      const realVariant = variantsMap.get(String(variant._id));
+      await Product.updateOne(
+        { "variants._id": variant._id },
+        {
+          $inc: { "variants.$.quantity": -quantity },
+        },
+      ).session(session);
+    }),
+  );
 };
 
 module.exports = {
@@ -132,4 +169,5 @@ module.exports = {
   addVariant,
   removeVariant,
   updateVariant,
+  consumeProducts,
 };

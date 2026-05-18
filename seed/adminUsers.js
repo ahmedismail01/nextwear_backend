@@ -2,7 +2,7 @@
 const userCommand = require("../src/commands/userCommand");
 const userQuery = require("../src/queries/userQuery");
 
-require("dotenv").config();
+require("@dotenvx/dotenvx").config();
 
 module.exports.seedAdminUser = async () => {
   try {

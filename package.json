@@ -16,11 +16,13 @@
   "main": "bin/server.js",
   "scripts": {
     "test": "jest",
+    "test:watch": "jest --watch",
     "dev": "nodemon",
     "seed": "node ./seed/index.js",
     "start": "node bin/server.js"
   },
   "dependencies": {
+    "@dotenvx/dotenvx": "^1.66.0",
     "bcryptjs": "^3.0.2",
     "cloudinary": "^2.7.0",
     "cookie-parser": "^1.4.7",
@@ -40,6 +42,7 @@
     "zod": "^4.1.12"
   },
   "devDependencies": {
+    "baseline-browser-mapping": "^2.10.30",
     "jest": "^30.2.0",
     "mongodb-memory-server": "^10.3.0",
     "supertest": "^7.1.4"

@@ -1,14 +1,13 @@
 const mongoose = require("mongoose");
 const productService = require("../../../src/services/productService");
 const Product = require("../../../src/models/product");
-const category = require("../../../src/models/category");
-
+const Category = require("../../../src/models/category");
 describe("consumeProducts", () => {
   let categories;
   let products;
 
   beforeEach(async () => {
-    categories = await category.insertMany([
+    categories = await Category.insertMany([
       { name: "Clothing" },
       { name: "Electronics" },
     ]);
@@ -54,14 +53,14 @@ describe("consumeProducts", () => {
 
   afterEach(async () => {
     await Product.deleteMany({});
-    await category.deleteMany({});
+    await Category.deleteMany({});
   });
 
   it("should consume stock from multiple product variants", async () => {
     const consumptionList = [
       { variant: { _id: products[0].variants[0]._id }, quantity: 2 },
       { variant: { _id: products[0].variants[1]._id }, quantity: 1 },
-      { variant: { _id: products[1].variants[0]._id }, quantity: 1 },
+      { variant: { _id: products[1].variants[0]._id }, quantity: 3 },
     ];
 
     await productService.consumeProducts(consumptionList, null);
@@ -69,9 +68,9 @@ describe("consumeProducts", () => {
     const updatedTShirt = await Product.findById(products[0]._id);
     const updatedLaptop = await Product.findById(products[1]._id);
 
-    expect(updatedTShirt.variants[0].quantity).toBe(8);
-    expect(updatedTShirt.variants[1].quantity).toBe(4);
-    expect(updatedLaptop.variants[0].quantity).toBe(2);
+    expect(updatedTShirt?.variants[0].quantity).toBe(8);
+    expect(updatedTShirt?.variants[1].quantity).toBe(4);
+    expect(updatedLaptop?.variants[0].quantity).toBe(0);
   });
 
   it("should throw an error if not enough stock", async () => {
@@ -79,7 +78,7 @@ describe("consumeProducts", () => {
       { variant: { _id: products[0].variants[0]._id }, quantity: 11 },
     ];
     await expect(
-      productService.consumeProducts(consumptionList, null)
+      productService.consumeProducts(consumptionList, null),
     ).rejects.toThrow(Error);
     const updatedTShirt = await Product.findById(products[0]._id);
     expect(updatedTShirt.variants[0].quantity).toBe(10);
