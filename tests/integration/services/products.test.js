@@ -81,6 +81,6 @@ describe("consumeProducts", () => {
       productService.consumeProducts(consumptionList, null),
     ).rejects.toThrow(Error);
     const updatedTShirt = await Product.findById(products[0]._id);
-    expect(updatedTShirt.variants[0].quantity).toBe(10);
+    expect(updatedTShirt?.variants[0].quantity).toBe(10);
   });
 });

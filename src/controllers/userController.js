@@ -82,7 +82,7 @@ const updateAddress = async (req, res) => {
   const updatedUser = await userService.updateAddress(
     userId,
     addressId,
-    address
+    address,
   );
   const sanitizedUser = sanitizeUser(updatedUser);
   res.status(200).json({ success: true, data: sanitizedUser });

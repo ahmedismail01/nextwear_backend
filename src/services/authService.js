@@ -15,7 +15,7 @@ class authService {
       throw new AppError("Invalid credentials", 401, true);
     }
 
-    return sanitizeUser(user);
+    return user;
   }
 
   async generateToken(payload) {
@@ -27,7 +27,7 @@ class authService {
       throw new AppError("User already exists", 409, true);
     }
     const newUser = await userCommand.createRecord(userData);
-    return sanitizeUser(newUser);
+    return newUser;
   }
 
   async comparePassword(inputPassword, storedPassword) {

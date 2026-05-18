@@ -24,7 +24,6 @@ describe("authService", () => {
     expect(user).toHaveProperty("firstName", dummyUser.firstName);
     expect(user).toHaveProperty("lastName", dummyUser.lastName);
     expect(user).toHaveProperty("phoneNumber", dummyUser.phoneNumber);
-    expect(user).not.toHaveProperty("password");
   });
 
   it("should not create user with existing email", async () => {
@@ -42,7 +41,6 @@ describe("authService", () => {
     expect(loggedInUser).toHaveProperty("firstName", dummyUser.firstName);
     expect(loggedInUser).toHaveProperty("lastName", dummyUser.lastName);
     expect(loggedInUser).toHaveProperty("phoneNumber", dummyUser.phoneNumber);
-    expect(loggedInUser).not.toHaveProperty("password");
   });
   it("should not login with wrong password", async () => {
     await expect(
