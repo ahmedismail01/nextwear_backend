@@ -41,7 +41,12 @@ const register = async (req, res) => {
   // sanitize user object before sending response
   const sanitizedUser = sanitizeUser(user);
 
-  res.json({ success: true, user: sanitizedUser, token });
+  res.json({
+    success: true,
+    message: `Welcome to NextWear, ${sanitizedUser.firstName}! Your account has been created successfully.`,
+    user: sanitizedUser,
+    token,
+  });
 };
 
 module.exports = { login, register };

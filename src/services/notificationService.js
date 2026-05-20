@@ -1,4 +1,4 @@
-const nodemailerConnector = require("../connectors/nodeMailer/nodeMailer");
+const emailProvider = require("../connectors/sendgridMailing/sendgrid");
 const handlebars = require("handlebars");
 const path = require("path");
 const fs = require("fs");
@@ -12,9 +12,22 @@ class NotificationService {
 
   async sendOrderInvoice(order, userEmail) {
     const html = await this.compileTemplate("orderInvoice", { order });
-    await nodemailerConnector.sendEmail({
+    await emailProvider.sendEmail({
       to: userEmail,
       subject: `Your Order Invoice - ${order.trackingNumber}`,
+      html,
+    });
+  }
+
+  async sendWelcomeEmail(user) {
+    if (!user?.email || !process.env.SENDGRID_API_KEY) {
+      return;
+    }
+
+    const html = await this.compileTemplate("welcome", { user });
+    await emailProvider.sendEmail({
+      to: user.email,
+      subject: "Welcome to NextWear!",
       html,
     });
   }

@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const userQuery = require("../queries/userQuery");
 const userCommand = require("../commands/userCommand");
+const notificationService = require("./notificationService");
 const bcrypt = require("bcryptjs");
 const AppError = require("../utils/appError");
 const { sanitizeUser } = require("../dto/userDto");
@@ -22,11 +23,21 @@ class authService {
     return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
   }
   async register(userData) {
-    const existingUser = await userQuery.getRecord({ email: userData.email });
+    const existingUser = await userQuery.getRecord({
+      $or: [{ email: userData.email }, { phoneNumber: userData.phoneNumber }],
+    });
     if (existingUser) {
       throw new AppError("User already exists", 409, true);
     }
+
     const newUser = await userCommand.createRecord(userData);
+
+    try {
+      await notificationService.sendWelcomeEmail(newUser);
+    } catch (error) {
+      console.error("Failed to send welcome email:", error);
+    }
+
     return newUser;
   }
 
